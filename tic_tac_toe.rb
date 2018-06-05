@@ -1,4 +1,4 @@
-#first
+=begin #first
 #create an empty array with the lenght of 97
 players_array = ["","","","","","","","",""]
   #create inputs to fill the positions of the array
@@ -49,7 +49,7 @@ win_conditions = [
     end
 
   end
-
+=end
 class TicTacToeGame
   # Create players
   # Create Board
@@ -58,11 +58,32 @@ class TicTacToeGame
     @player_1 = player_1
     @player_2 = player_2
     @board = board
+    @win_condition = false
   end
 
   def loop_game
     #ask player input
     #check win condition
+    @board.show
+    while !@win_condition
+      position = @player_1.player_input
+      @board.update(position, @player_1)
+      @board.show
+      if @board.full?
+        puts "Nobody Wins, you guys suck."
+        @board.clear
+        @board.show
+      end
+      position = @player_2.player_input
+      @board.update(position, @player_2)
+      @board.show
+      if @board.full?
+        puts "Nobody Wins, you guys suck."
+        puts "Start Again!"
+        @board.clear
+        @board.show
+      end
+    end
   end
 
 end
@@ -73,18 +94,68 @@ class Player
   def initialize(name, sign)
     @name = name
     @sign = sign
+    @inputs = []
   end
 
   def player_input
     #get player input with chomps
+    puts "It's #{@name} turn. Choose a position:"
+    position = gets.chomp.to_i
+    @inputs.push( position )
+    return position
+  end
+
+  def sign
+    return @sign
+  end
+
+  def inputs
+    return @inputs
   end
 
 end
+
+#create players
+#create board
+#start game
+#input
+#check conditions
+
 
 class Board
   # Available positions
   # printing board
   def initialize()
-    #create empty board
+    # create empty board
+    @board = Array.new(9)
+
+  end
+
+  def clear
+    # clear board
+    for i in 0...@board.length do
+      @board[i] = nil
+    end
+
+  end
+
+  def show
+    # print the board in console
+    print @board
+    puts ""
+  end
+
+  def full?
+    @board.all? { |element| !element.nil? }
+  end
+
+  def update(position, player)
+    @board[position] = player.sign
   end
 end
+
+player1 = Player.new("Ayoub", "X")
+player2 = Player.new("Jesus", "O")
+board = Board.new
+game = TicTacToeGame.new(player1, player2, board)
+game.loop_game
