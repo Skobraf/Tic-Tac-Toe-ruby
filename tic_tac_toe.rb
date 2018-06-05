@@ -61,6 +61,20 @@ class TicTacToeGame
     @win_condition = false
   end
 
+  def win?
+    @board.win_conditions.each do |win_condition|
+      if (win_condition & @player_1.inputs ) == win_condition
+        @player_1.state = true
+        return true
+      end
+      if (win_condition & @player_2.inputs ) == win_condition
+        @player_2.state = true
+        return true
+      end
+    end
+    return false
+  end
+
   def loop_game
     #ask player input
     #check win condition
@@ -69,6 +83,12 @@ class TicTacToeGame
       position = @player_1.player_input
       @board.update(position, @player_1)
       @board.show
+
+      if win?
+        @win_condition = true
+        break
+      end
+
       if @board.full?
         puts "Nobody Wins, you guys suck."
         @board.clear
@@ -77,6 +97,10 @@ class TicTacToeGame
       position = @player_2.player_input
       @board.update(position, @player_2)
       @board.show
+      if win?
+        @win_condition = true
+        break
+      end
       if @board.full?
         puts "Nobody Wins, you guys suck."
         puts "Start Again!"
@@ -84,8 +108,13 @@ class TicTacToeGame
         @board.show
       end
     end
+    if @player_1.state
+      puts "#{@player_1.name} WINS"
+    end
+    if @player_2.state
+      puts "#{@player_2.name} WINS"
+    end
   end
-
 end
 
 class Player
@@ -95,12 +124,16 @@ class Player
     @name = name
     @sign = sign
     @inputs = []
+    @state = false
   end
-
   def player_input
     #get player input with chomps
     puts "It's #{@name} turn. Choose a position:"
     position = gets.chomp.to_i
+    while @inputs.include? position
+      puts "Choose another position!"
+      position = gets.chomp.to_i
+    end
     @inputs.push( position )
     return position
   end
@@ -113,14 +146,18 @@ class Player
     return @inputs
   end
 
+  def state=(value)
+    @state = value
+  end
+
+  def state
+    return @state
+  end
+
+  def name
+    return @name
+  end
 end
-
-#create players
-#create board
-#start game
-#input
-#check conditions
-
 
 class Board
   # Available positions
@@ -128,7 +165,15 @@ class Board
   def initialize()
     # create empty board
     @board = Array.new(9)
+    @win_conditions = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6],  [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ]
+  end
 
+  def values
+    return @board
+  end
+
+  def win_conditions
+    return @win_conditions
   end
 
   def clear
@@ -136,17 +181,28 @@ class Board
     for i in 0...@board.length do
       @board[i] = nil
     end
-
   end
 
   def show
     # print the board in console
-    print @board
+    puts "  #{@board[0]} | #{@board[1]} | #{@board[2]}"
+    puts "------------"
+    puts "  #{@board[3]} | #{@board[4]} | #{@board[5]}"
+    puts "------------"
+    puts "  #{@board[6]} | #{@board[7]} | #{@board[8]}"
     puts ""
   end
 
   def full?
     @board.all? { |element| !element.nil? }
+  end
+
+  def showAvailable
+    @board.each_with_index do |element, index|
+      if element.nil?
+        puts index
+      end
+    end
   end
 
   def update(position, player)
