@@ -21,8 +21,6 @@ players_array = ["","","","","","","","",""]
   player_x.push(player_2_input)
   print players_array
 
-
-#check for win condition
 # set up 8 win condition
 #win conditions are :
 win_conditions = [
@@ -35,8 +33,6 @@ win_conditions = [
                   [0, 4, 8],
                   [2, 4, 6]
                 ]
-
-
   def win_wondition
     player_o_win = false
     player_x_win = false
@@ -55,11 +51,40 @@ win_conditions = [
   end
 
 class TicTacToeGame
+  # Create players
+  # Create Board
+  # Loop the game
+  def initialize(player_1, player_2, board)
+    @player_1 = player_1
+    @player_2 = player_2
+    @board = board
+  end
+
+  def loop_game
+    #ask player input
+    #check win condition
+  end
+
 end
 
 class Player
+  # get input
+  # player configuration (customization)
+  def initialize(name, sign)
+    @name = name
+    @sign = sign
+  end
+
+  def player_input
+    #get player input with chomps
+  end
+
 end
 
 class Board
+  # Available positions
+  # printing board
+  def initialize()
+    #create empty board
+  end
 end
-#chek if [x,x,x] have the same index as the winning condition
