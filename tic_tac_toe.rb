@@ -1,55 +1,3 @@
-=begin #first
-#create an empty array with the lenght of 97
-players_array = ["","","","","","","","",""]
-  #create inputs to fill the positions of the array
-  player_x = []
-  for i in 0...players_array do
-    player_1_input = gets.chomp.to_i
-    players_array[player_1_input] = 'X'
-    player_x.push(player_1_input)
-    if(!win_condition)
-      player_2_input = gets.chomp.to_i
-      players_array[player_2_input] = '0'
-      player_x.push(player_2_input)
-    end
-  end
-  player_1_input = gets.chomp.to_i
-  players_array[player1_input] = 'X'
-  player_x.push(player1_input)
-  player_2_input = gets.chomp.to_i
-  players_array[player_2_input] = '0'
-  player_x.push(player_2_input)
-  print players_array
-
-# set up 8 win condition
-#win conditions are :
-win_conditions = [
-                  [0, 1, 2],
-                  [3, 4, 5],
-                  [6, 7, 8],
-                  [0, 3, 6],
-                  [1, 4, 7],
-                  [2, 5, 8],
-                  [0, 4, 8],
-                  [2, 4, 6]
-                ]
-  def win_wondition
-    player_o_win = false
-    player_x_win = false
-    win_conditions.each do |array|
-      win_condition = array.to_set
-      if win_condition.subset?(player_x.to_set)
-        player_x_win = true
-        break
-      end
-      if win_condition.subset?(player_o.to_set)
-        player_o_win = true
-        break
-      end
-    end
-
-  end
-=end
 class TicTacToeGame
   # Create players
   # Create Board
@@ -61,6 +9,7 @@ class TicTacToeGame
     @win_condition = false
   end
 
+  # check if one of the players is a winner
   def win?
     @board.win_conditions.each do |win_condition|
       if (win_condition & @player_1.inputs ) == win_condition
@@ -78,23 +27,28 @@ class TicTacToeGame
   def loop_game
     #ask player input
     #check win condition
+    #update the Board
+    #clear the board when full
+    #return the winner
     @board.show
     while !@win_condition
-      position = @player_1.player_input
+      #calling the input for player_1
+      position = @player_1.player_input(@player_1.inputs, @player_2.inputs)
       @board.update(position, @player_1)
       @board.show
-
+      #check if he wins
       if win?
         @win_condition = true
         break
       end
-
+      #if nobody win and the board is full then clear
       if @board.full?
         puts "Nobody Wins, you guys suck."
         @board.clear
         @board.show
       end
-      position = @player_2.player_input
+      #same process for player_2
+      position = @player_2.player_input(@player_1.inputs, @player_2.inputs)
       @board.update(position, @player_2)
       @board.show
       if win?
@@ -118,6 +72,9 @@ class TicTacToeGame
 end
 
 class Player
+  attr_reader :sign, :inputs, :name
+  attr_accessor :state
+
   # get input
   # player configuration (customization)
   def initialize(name, sign)
@@ -126,54 +83,33 @@ class Player
     @inputs = []
     @state = false
   end
-  def player_input
-    #get player input with chomps
+  #Check if the players are not filling the same positions in the board
+  def validateInput(value, player_1_positions, player_2_positions)
+    while (player_1_positions.include?(value) || player_2_positions.include?(value) || value > 9 || value < 1 )
+      puts "Pick another choice!"
+      value = gets.chomp.to_i
+    end
+    return value
+  end
+
+  #get each player input with chomps
+  def player_input(player_1_positions, player_2_positions)
     puts "It's #{@name} turn. Choose a position:"
     position = gets.chomp.to_i
-    while @inputs.include? position
-      puts "Choose another position!"
-      position = gets.chomp.to_i
-    end
+    position = validateInput(position, player_1_positions, player_2_positions)
     @inputs.push( position )
     return position
   end
-
-  def sign
-    return @sign
-  end
-
-  def inputs
-    return @inputs
-  end
-
-  def state=(value)
-    @state = value
-  end
-
-  def state
-    return @state
-  end
-
-  def name
-    return @name
-  end
 end
+#end of player class
 
 class Board
-  # Available positions
-  # printing board
+  attr_reader :win_conditions
+
   def initialize()
     # create empty board
     @board = Array.new(9)
-    @win_conditions = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6],  [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ]
-  end
-
-  def values
-    return @board
-  end
-
-  def win_conditions
-    return @win_conditions
+    @win_conditions = [ [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7],  [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7] ]
   end
 
   def clear
@@ -185,11 +121,18 @@ class Board
 
   def show
     # print the board in console
-    puts "  #{@board[0]} | #{@board[1]} | #{@board[2]}"
-    puts "------------"
-    puts "  #{@board[3]} | #{@board[4]} | #{@board[5]}"
-    puts "------------"
-    puts "  #{@board[6]} | #{@board[7]} | #{@board[8]}"
+    def mask_value(value)
+      if value.nil?
+        return " "
+      else
+        return value
+      end
+    end
+    puts "  #{mask_value(@board[0])} | #{mask_value(@board[1])} | #{mask_value(@board[2])}"
+    puts "-------------"
+    puts "  #{mask_value(@board[3])} | #{mask_value(@board[4])} | #{mask_value(@board[5])}"
+    puts "-------------"
+    puts "  #{mask_value(@board[6])} | #{mask_value(@board[7]) } | #{mask_value(@board[8])}"
     puts ""
   end
 
@@ -206,10 +149,11 @@ class Board
   end
 
   def update(position, player)
-    @board[position] = player.sign
+    @board[position - 1] = player.sign
   end
 end
 
+#testing the gmae
 player1 = Player.new("Ayoub", "X")
 player2 = Player.new("Jesus", "O")
 board = Board.new
