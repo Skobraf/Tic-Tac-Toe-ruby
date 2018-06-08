@@ -13,6 +13,7 @@ player1 = Player.new(player1_name, "X".red)
 player2 = Player.new(player2_name, "O".green)
 board = Board.new
 game = TicTacToeGame.new(player1, player2, board)
+system("cls")
 game.board.show
 
 while !game.win_condition
@@ -20,6 +21,7 @@ while !game.win_condition
     puts "Nobody Wins, you guys suck."
     game.players_clear
     game.board.clear
+    system("cls")
     game.board.show
   end
 
@@ -32,6 +34,7 @@ while !game.win_condition
   end
   position = game.player_input(player, position)
   game.board.update(position, player)
+  system("cls")
   game.board.show
   game.win_condition = game.win? #player.state!
 end

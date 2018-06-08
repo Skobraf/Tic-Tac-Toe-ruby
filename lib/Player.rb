@@ -20,7 +20,13 @@ end
 
 
 class MissingName < StandardError
+  def initialize(msg="Missing Name/Empty Name")
+    super
+  end
 end
 
 class MissingSign < StandardError
+  def initialize(msg="Missing Sign/Empty Sign")
+    super
+  end
 end

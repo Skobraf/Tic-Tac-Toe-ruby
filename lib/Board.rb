@@ -1,5 +1,5 @@
 class Board
-  attr_reader :win_conditions
+  attr_reader :win_conditions, :board
 
   def initialize()
     # create empty board
@@ -12,6 +12,7 @@ class Board
     for i in 0...@board.length do
       @board[i] = nil
     end
+    return self
   end
 
   def show
@@ -23,29 +24,20 @@ class Board
         return value
       end
     end
-    system("cls")
-    puts "\n\n"
+    
     puts "  #{mask_value(@board[0])} | #{mask_value(@board[1])} | #{mask_value(@board[2])}"
     puts "-------------"
     puts "  #{mask_value(@board[3])} | #{mask_value(@board[4])} | #{mask_value(@board[5])}"
     puts "-------------"
     puts "  #{mask_value(@board[6])} | #{mask_value(@board[7]) } | #{mask_value(@board[8])}"
-    puts "\n\n"
   end
 
   def full?
     @board.all? { |element| !element.nil? }
   end
 
-  def show_available
-    @board.each_with_index do |element, index|
-      if element.nil?
-        puts index
-      end
-    end
-  end
-
   def update(position, player)
     @board[position - 1] = player.sign
+    return @board
   end
 end
